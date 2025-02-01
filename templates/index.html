@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Match Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin: 50px; 
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 500px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        h2 {
+            color: #007bff;
+        }
+        label {
+            font-weight: bold;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .icon {
+            margin-right: 10px;
+        }
+        .prediction {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .batting {
+            color: green;
+        }
+        .bowling {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fa-solid fa-cricket-ball"></i> IPL Match Prediction</h2>
+        <form action="/predict" method="post">
+            <label for="batting_team"><i class="fa-solid fa-users"></i> Batting Team:</label>
+            <select name="batting_team" required>
+                {% for team in teams %}
+                    <option value="{{ team }}">{{ team }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="bowling_team"><i class="fa-solid fa-bowling-ball"></i> Bowling Team:</label>
+            <select name="bowling_team" required>
+                {% for team in teams %}
+                    <option value="{{ team }}">{{ team }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="city"><i class="fa-solid fa-location-dot"></i> Match City:</label>
+            <select name="city" required>
+                {% for city in cities %}
+                    <option value="{{ city }}">{{ city }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="runs_left">Runs Left:</label>
+            <input type="number" name="runs_left" required>
+
+            <label for="balls_left">Balls Left:</label>
+            <input type="number" name="balls_left" required>
+
+            <label for="wickets">Wickets Remaining:</label>
+            <input type="number" name="wickets" required>
+
+            <label for="total_runs">Total Runs in 1st Innings:</label>
+            <input type="number" name="total_runs" required>
+
+            <button type="submit"><i class="fa-solid fa-chart-line"></i> Predict</button>
+        </form>
+
+        {% if prediction_text %}
+        <div class="prediction">
+                <span class="batting">{{ batting_team }} Win Probability: {{ prediction_text.split('|')[0].split(':')[1] }} <i class="fa-solid fa-bat"></i></span><br>
+                <span class="bowling">{{ bowling_team }} Win Probability: {{ prediction_text.split('|')[1].split(':')[1] }} <i class="fa-solid fa-ball"></i></span>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
