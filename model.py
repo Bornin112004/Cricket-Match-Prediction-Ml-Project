@@ -8,7 +8,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 import pickle
 
 # Load Data
@@ -79,7 +79,8 @@ def evaluate_model(model, X_test, y_test):
         'Accuracy': accuracy_score(y_test, y_pred),
         'Precision': precision_score(y_test, y_pred),
         'Recall': recall_score(y_test, y_pred),
-        'F1 Score': f1_score(y_test, y_pred)
+        'F1 Score': f1_score(y_test, y_pred),
+        'Confusion Matrix': confusion_matrix(y_test, y_pred)
     }
 
 evaluation_logistic = evaluate_model(logistic_model, X_test, y_test)
@@ -93,6 +94,22 @@ comparison_df = pd.DataFrame({
 })
 
 print(comparison_df.to_string(index=False))
+
+# Plot Confusion Matrices
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+sns.heatmap(evaluation_logistic['Confusion Matrix'], annot=True, fmt='d', cmap='Blues', ax=axes[0])
+axes[0].set_title('Logistic Regression Confusion Matrix')
+axes[0].set_xlabel('Predicted')
+axes[0].set_ylabel('Actual')
+
+sns.heatmap(evaluation_random_forest['Confusion Matrix'], annot=True, fmt='d', cmap='Greens', ax=axes[1])
+axes[1].set_title('Random Forest Confusion Matrix')
+axes[1].set_xlabel('Predicted')
+axes[1].set_ylabel('Actual')
+
+plt.tight_layout()
+plt.show()
 
 # Save Model
 pickle.dump(random_forest_model, open('ipl_win_predictor.pkl', 'wb'))
