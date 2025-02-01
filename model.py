@@ -64,7 +64,7 @@ def train_model(X_train, y_train, model):
     trf = ColumnTransformer([
         ('encoder', OneHotEncoder(sparse_output=False, drop='first'), ['batting_team', 'bowling_team', 'city'])
     ], remainder='passthrough')
-    
+
     pipe = Pipeline(steps=[('preprocessor', trf), ('classifier', model)])
     pipe.fit(X_train, y_train)
     return pipe
@@ -72,6 +72,7 @@ def train_model(X_train, y_train, model):
 logistic_model = train_model(X_train, y_train, LogisticRegression(solver='liblinear'))
 random_forest_model = train_model(X_train, y_train, RandomForestClassifier(random_state=42))
 
+# Evaluation
 def evaluate_model(model, X_test, y_test):
     y_pred = model.predict(X_test)
     return {
@@ -84,10 +85,14 @@ def evaluate_model(model, X_test, y_test):
 evaluation_logistic = evaluate_model(logistic_model, X_test, y_test)
 evaluation_random_forest = evaluate_model(random_forest_model, X_test, y_test)
 
-print("Logistic Regression Results:")
-print(pd.DataFrame(evaluation_logistic, index=[0]))
-print("\nRandom Forest Classifier Results:")
-print(pd.DataFrame(evaluation_random_forest, index=[0]))
+# Displaying Comparison Table
+comparison_df = pd.DataFrame({
+    'Metric': ['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+    'Logistic Regression': [evaluation_logistic['Accuracy'], evaluation_logistic['Precision'], evaluation_logistic['Recall'], evaluation_logistic['F1 Score']],
+    'Random Forest Classifier': [evaluation_random_forest['Accuracy'], evaluation_random_forest['Precision'], evaluation_random_forest['Recall'], evaluation_random_forest['F1 Score']]
+})
+
+print(comparison_df.to_string(index=False))
 
 # Save Model
 pickle.dump(random_forest_model, open('ipl_win_predictor.pkl', 'wb'))
